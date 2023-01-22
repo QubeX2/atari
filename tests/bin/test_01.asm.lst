@@ -1,0 +1,35 @@
+------- FILE test_01.asm LEVEL 1 PASS 1
+      1  0000					      processor	6502
+      2  0000 ????
+      3  0000 ????				      seg	code
+      4  f000					      org	$f000	; define the code origin at $f000
+      5  f000
+      6  f000				   start
+      7  f000		       78		      sei		; disable interupts
+      8  f001		       d8		      cld		; disable the BCD math mode
+      9  f002		       a2 ff		      ldx	#$ff	;
+     10  f004		       9a		      txs		; transfer x register to (S)tack pointer
+     11  f005
+     12  f005							;====================================================================
+     13  f005							; Code
+     14  f005							;====================================================================
+     15  f005		       18		      clc
+     16  f006		       a9 ff		      lda	#$ff
+     17  f008		       69 01		      adc	#1
+     18  f00a
+     19  f00a		       38		      sec
+     20  f00b		       a9 00		      lda	#$00
+     21  f00d		       e9 01		      sbc	#1
+     22  f00f
+     23  f00f		       18		      clc
+     24  f010		       a9 7f		      lda	#$7f	; overflow v
+     25  f012		       69 01		      adc	#$01	; addition goes outside range of -128 to 127
+     26  f014
+     27  f014		       4c 00 f0 	      jmp	start
+     28  f017
+     29  f017							;====================================================================
+     30  f017							; Fill the ROM size to exactly 4kb
+     31  f017							;====================================================================
+     32  fffc					      org	$fffc
+     33  fffc		       00 f0		      .word.w	start	; Reset vector at $fffc (where the programs start)
+     34  fffe		       00 f0		      .word.w	start	; Interrupt vector $fffe (unused in the VCS)

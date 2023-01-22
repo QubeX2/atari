@@ -1,3 +1,6 @@
+;====================================================================
+; Atari 2600 Startup
+;====================================================================
     processor 6502
 
     seg code
@@ -10,17 +13,9 @@ start:
     txs             ; transfer x register to (S)tack pointer
 
 ;====================================================================
-; Clear the Page Zero Region ($00 - $ff)
-; Clear RAM and TIA registers
+; Code
 ;====================================================================
-
-    lda #0
-    ldx #0
-
-loop:
-    dex
-    sta $0,x        ; store the value of A inside memadr $0 + x
-    bne loop        ; loop until x is equal to zero (z-flag i set)
+    jmp start
 
 ;====================================================================
 ; Fill the ROM size to exactly 4kb
@@ -28,7 +23,3 @@ loop:
     org $fffc
     .word start     ; Reset vector at $fffc (where the programs start)
     .word start     ; Interrupt vector $fffe (unused in the VCS)
-
-
-
-

@@ -9,18 +9,11 @@ start:
     ldx #$ff        ; 
     txs             ; transfer x register to (S)tack pointer
 
-;====================================================================
-; Clear the Page Zero Region ($00 - $ff)
-; Clear RAM and TIA registers
-;====================================================================
+    lda #$82
+    ldx #82
+    ldy $82
 
-    lda #0
-    ldx #0
-
-loop:
-    dex
-    sta $0,x        ; store the value of A inside memadr $0 + x
-    bne loop        ; loop until x is equal to zero (z-flag i set)
+    jmp start
 
 ;====================================================================
 ; Fill the ROM size to exactly 4kb

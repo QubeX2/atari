@@ -16,11 +16,11 @@
      15  f005							;====================================================================
      16  f005
      17  f005		       a9 00		      lda	#0
-     18  f007		       a2 ff		      ldx	#$ff
+     18  f007		       a2 00		      ldx	#$0
      19  f009
      20  f009				   loop
-     21  f009		       95 00		      sta	$0,x	; store the value of A inside memadr $0 + x
-     22  f00b		       ca		      dex
+     21  f009		       ca		      dex
+     22  f00a		       95 00		      sta	$0,x	; store the value of A inside memadr $0 + x
      23  f00c		       d0 fb		      bne	loop	; loop until x is equal to zero (z-flag i set)
      24  f00e
      25  f00e							;====================================================================
