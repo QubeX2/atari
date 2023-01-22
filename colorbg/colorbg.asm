@@ -13,9 +13,13 @@ start:
     CLEAN_START     ; macro to safely clear the memory
 
 ;====================================================================
-; Code
+; set bg color
 ;====================================================================
-    jmp start
+main:
+    lda #$1e        ; load color inte A ($1e is NTSC yello)
+    sta COLUBK      ; to adr $09
+
+    jmp main        ; repeat from start
 
 ;====================================================================
 ; Fill the ROM size to exactly 4kb
