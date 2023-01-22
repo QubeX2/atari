@@ -84,9 +84,20 @@ TIA_BASE_WRITE_ADDRESS = TIA_BASE_ADDRESS
 			ORG TIA_BASE_WRITE_ADDRESS
 
 	; DO NOT CHANGE THE RELATIVE ORDERING OF REGISTERS!
-    
+
+;;; VSYNC
+; 0     Not used
+; 1     Vertical Sync (0=Stop sync, 1=Start sync)
+; 2-7   Not used
 VSYNC       ds 1    ; $00   0000 00x0   Vertical Sync Set-Clear
+;;; VBLANK
+; 0     Not used
+; 1     Vertical Blank (0=Stop blanking, 1=Start blanking)
+; 2-5   Not used
+; 6     INPT4-INPT5 Control (0=Normal Input, 1=Latched Input)
+; 7     INPT0-INPT3 Control (0=Normal Input, 1=Dumped to ground)
 VBLANK		ds 1	; $01   xx00 00x0   Vertical Blank Set-Clear
+;;;
 WSYNC		ds 1	; $02   ---- ----   Wait for Horizontal Blank
 RSYNC		ds 1	; $03   ---- ----   Reset Horizontal Sync Counter
 NUSIZ0		ds 1	; $04   00xx 0xxx   Number-Size player/missle 0
@@ -95,12 +106,24 @@ COLUP0		ds 1	; $06   xxxx xxx0   Color-Luminance Player 0
 COLUP1      ds 1    ; $07   xxxx xxx0   Color-Luminance Player 1
 COLUPF      ds 1    ; $08   xxxx xxx0   Color-Luminance Playfield
 COLUBK      ds 1    ; $09   xxxx xxx0   Color-Luminance Background
+;;; CONTROL PLAYFIELD
+; 0     Reflection, 
+; 1     Color (0=Normal, 1=Score Mode)
+; 2     Ball Priority (0=Normal, 1=Above Players/Missiles)
+; 3     Not used
+; 4-5   Ball Size     (0..3 = 1x, 2x, 4x, 8x)
+; 6-7   Not used
 CTRLPF      ds 1    ; $0A   00xx 0xxx   Control Playfield, Ball, Collisions
+;;;
 REFP0       ds 1    ; $0B   0000 x000   Reflection Player 0
 REFP1       ds 1    ; $0C   0000 x000   Reflection Player 1
+;;; PLAYFIELD
+;    PF0         PF1             PF2
+; |4 5 6 7|7 6 5 4 3 2 1 0|0 1 2 3 4 5 6 7|
 PF0         ds 1    ; $0D   xxxx 0000   Playfield Register Byte 0
 PF1         ds 1    ; $0E   xxxx xxxx   Playfield Register Byte 1
 PF2         ds 1    ; $0F   xxxx xxxx   Playfield Register Byte 2
+;;;
 RESP0       ds 1    ; $10   ---- ----   Reset Player 0
 RESP1       ds 1    ; $11   ---- ----   Reset Player 1
 RESM0       ds 1    ; $12   ---- ----   Reset Missle 0
@@ -112,8 +135,11 @@ AUDF0       ds 1    ; $17   000x xxxx   Audio Frequency 0
 AUDF1       ds 1    ; $18   000x xxxx   Audio Frequency 1
 AUDV0       ds 1    ; $19   0000 xxxx   Audio Volume 0
 AUDV1       ds 1    ; $1A   0000 xxxx   Audio Volume 1
+;;; Graphics Player
+; 0-7   Player Shape (0=Transparent, 1=Color)
 GRP0        ds 1    ; $1B   xxxx xxxx   Graphics Register Player 0
 GRP1        ds 1    ; $1C   xxxx xxxx   Graphics Register Player 1
+;;;
 ENAM0       ds 1    ; $1D   0000 00x0   Graphics Enable Missle 0
 ENAM1       ds 1    ; $1E   0000 00x0   Graphics Enable Missle 1
 ENABL       ds 1    ; $1F   0000 00x0   Graphics Enable Ball

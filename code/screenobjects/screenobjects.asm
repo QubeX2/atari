@@ -24,6 +24,9 @@ start:
     lda #$c6
     sta COLUP1
 
+    ldy #%00000010
+    sty CTRLPF
+
 ;====================================================================
 ; Main
 ;  VSYNC and VBLANK
