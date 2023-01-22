@@ -3,8 +3,8 @@
 ;====================================================================
     processor 6502
 
-    include "../vcs.h"
-    include "../macro.h"
+    include "../_inc/vcs.h"
+    include "../_inc/macro.h"
 
     seg code
     org $f000       ; define the code origin at $f000
@@ -13,11 +13,48 @@ start:
     CLEAN_START     ; macro to safely clear the memory
 
 ;====================================================================
-; set bg color
+; Main
 ;====================================================================
 main:
-    lda #$1e        ; load color inte A ($1e is NTSC yello)
-    sta COLUBK      ; to adr $09
+    lda #2
+    sta VBLANK      ;turn on VBLANK
+    sta VSYNC       ;turn on VSYNC
+
+    ; VSYNC 3 scanlines
+    REPEAT 3
+        sta WSYNC
+    REPEND
+
+    lda #0
+    sta VSYNC       ;turn of VSYNC
+
+    ; VBLANK 37 scanlines 
+    ldx #37
+loopvb:
+    sta WSYNC       ;hit WSYNC and wait for next scanline
+    dex
+    bne loopvb
+
+    lda #0
+    sta VBLANK
+
+    ; DISPLAY 192 visible scanlines
+    ldx #192
+loopm:
+    stx COLUBK      ;set the bg color
+    sta WSYNC
+    dex
+    bne loopm
+
+    ; OVERSCAN 30 scanlines 
+    lda #2
+    sta VBLANK
+
+    ldx #30
+loopos:
+    sta WSYNC       ;hit WSYNC and wait for next scanline
+    dex
+    bne loopos
 
     jmp main        ; repeat from start
 
