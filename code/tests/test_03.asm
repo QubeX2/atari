@@ -9,12 +9,14 @@
 ;====================================================================
 ; Variables
 ;====================================================================
-ORG_END = $fffc
+ORG_END     EQU $fffc
+P0Height    EQU 9
+
 
     seg.u vars
     org $80
 
-var1        ds 1
+Player0YPos .byte
 
 ;====================================================================
 ; Code
@@ -28,10 +30,13 @@ start:
 ;====================================================================
 ; Init
 ;====================================================================
-    ldx #$80        ; blue color
+    ldx #$00        ; blue color
     stx COLUBK
     lda #$0f        ; white
     sta COLUPF      
+
+    lda #150
+    sta Player0YPos
 
 ;====================================================================
 ; Main
@@ -62,6 +67,21 @@ frame:
     ldx #192
 
 scanl:
+    txa
+    sec
+    sbc Player0YPos ; 192 - 185 = 7
+    cmp #P0Height   ; 7 < 9
+    bcc ldbmp        ; yes branch (only works on unsigned)
+    lda #0
+
+ldbmp:
+    tay             ; 7 to a
+    lda PlayerBmp,y
+    sta GRP0
+
+    lda PlayerClr,y
+    sta COLUP0
+
     sta WSYNC
     dex
     bne scanl
@@ -82,6 +102,30 @@ scanl:
 ;====================================================================
 ; Fill the ROM size to exactly 4kb
 ;====================================================================
+    org ORG_END - 20
+PlayerBmp:
+    .byte #%00000000
+    .byte #%00101000
+    .byte #%01110100
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%01111100
+    .byte #%00110000
+
+PlayerClr:
+    .byte #$00
+    .byte #$40
+    .byte #$40
+    .byte #$40
+    .byte #$40
+    .byte #$42
+    .byte #$42
+    .byte #$44
+    .byte #$d2
+
+
     org ORG_END
     .word start     ; Reset vector at $fffc (where the programs start)
     .word start     ; Interrupt vector $fffe (unused in the VCS)
