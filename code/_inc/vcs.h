@@ -143,11 +143,31 @@ GRP1        ds 1    ; $1C   xxxx xxxx   Graphics Register Player 1
 ENAM0       ds 1    ; $1D   0000 00x0   Graphics Enable Missle 0
 ENAM1       ds 1    ; $1E   0000 00x0   Graphics Enable Missle 1
 ENABL       ds 1    ; $1F   0000 00x0   Graphics Enable Ball
+; Basically, divides pos by 15 and stores the int result of that.
+; Then, the mod of that is adjusted to equal 6 + HMP1.
+;   HMPx bits 4..7: Offset value:
+;     0000 ($00): No offset
+;     0001 ($10): Left 1 clock
+;     0010 ($20): Left 2 clocks
+;     0011 ($30): Left 3 clocks
+;     0100 ($40): Left 4 clocks
+;     0101 ($50): Left 5 clocks
+;     0110 ($60): Left 6 clocks
+;     0111 ($70): Left 7 clocks
+;     1000 ($80): Right 8 clocks
+;     1001 ($90): Right 7 clocks
+;     1010 ($A0): Right 6 clocks
+;     1011 ($B0): Right 5 clocks
+;     1100 ($C0): Right 4 clocks
+;     1101 ($D0): Right 3 clocks
+;     1110 ($E0): Right 2 clocks
+;     1111 ($F0): Right 1 clock
 HMP0        ds 1    ; $20   xxxx 0000   Horizontal Motion Player 0
 HMP1        ds 1    ; $21   xxxx 0000   Horizontal Motion Player 1
 HMM0        ds 1    ; $22   xxxx 0000   Horizontal Motion Missle 0
 HMM1        ds 1    ; $23   xxxx 0000   Horizontal Motion Missle 1
 HMBL        ds 1    ; $24   xxxx 0000   Horizontal Motion Ball
+;;;
 VDELP0      ds 1    ; $25   0000 000x   Vertical Delay Player 0
 VDELP1      ds 1    ; $26   0000 000x   Vertical Delay Player 1
 VDELBL      ds 1    ; $27   0000 000x   Vertical Delay Ball
@@ -184,7 +204,15 @@ INPT5       ds 1	; $0D		x000 0000       Read Input (Trigger) 1
 			ORG $280
  
 	; RIOT MEMORY MAP
-
+;;; SWCHA (0 means pressed)
+; 0     P1 - up
+; 1     P1 - down
+; 2     P1 - left
+; 3     P1 - right
+; 4     P0 - up
+; 5     P0 - down
+; 6     P0 - left
+; 7     P0 - right 
 SWCHA       ds 1    ; $280      Port A data register for joysticks:
 					;			Bits 4-7 for player 1.  Bits 0-3 for player 2.
 
