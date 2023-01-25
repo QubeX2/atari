@@ -9,12 +9,15 @@
 ;====================================================================
 ; Variables
 ;====================================================================
-ORG_END = $fffc
+ORG_END     EQU $fffc
+P0Height    EQU 9
 
     seg.u vars
     org $80
 
-var1        ds 1
+PlayerBmpPtr .word
+Player0YPos .byte
+Player0XPos .byte
 
 ;====================================================================
 ; Code
@@ -28,12 +31,22 @@ start:
 ;====================================================================
 ; Init
 ;====================================================================
-    ldx #$80        ; blue color
+    ldx #$00        ; blue color
     stx COLUBK
     lda #$0f        ; white
     sta COLUPF      
 
-;# FRAME #############################################################
+    lda #1
+    sta Player0XPos
+
+    ldx #50
+    stx Player0YPos    
+
+    lda #<PlayerBmp
+    sta PlayerBmpPtr
+    lda #>PlayerBmp
+    sta PlayerBmpPtr+1
+
 ;====================================================================
 ; Main
 ;  VSYNC and VBLANK
@@ -51,7 +64,16 @@ frame:
     sta VSYNC       ;turn of VSYNC
 
     ; VBLANK 37 scanlines 
-    REPEAT 37
+    ; xpos
+    lda Player0XPos
+    sta HMCLR
+
+    ldy #0
+    jsr SetObjXPos
+    sta WSYNC
+    sta HMOVE
+
+    REPEAT 35
         sta WSYNC       ;hit WSYNC and wait for next scanline
     REPEND
     lda #0
@@ -63,7 +85,23 @@ frame:
     ldx #192
 
 scanl:
+    txa
+    sec
+    sbc Player0YPos ; 192 - 185 = 7
+    cmp #P0Height   ; 7 < 9
+    bcc ldbmp        ; yes branch (only works on unsigned)
+    lda #0
+
+ldbmp:
+    tay             ; 7 to a
+    lda (PlayerBmpPtr),y
+    sta GRP0
+
+    lda PlayerClr,y
+    sta COLUP0
+
     sta WSYNC
+
     dex
     bne scanl
 
@@ -79,11 +117,16 @@ scanl:
     lda #0
     sta VBLANK
 
+    ; move apple   
+    lda Player0XPos
+    clc
+    adc #2
+    and #$7f
+    sta Player0XPos
     jmp frame        ; repeat frame
 
-;# SUBROUTINES ######################################################
 ;====================================================================
-; SetObjXPos
+; Set Object X Position
 ;--------------------------------------------------------------------
 ; A = X-coordinate
 ; Y = Player0 (0), Player1 (1), Missile0 (2), Missile1 (3), Ball (4)
@@ -103,10 +146,32 @@ SetObjXPos:
     sta RESP0,Y
     rts
 
-;# DATA #############################################################
 ;====================================================================
 ; Fill the ROM size to exactly 4kb
 ;====================================================================
+    org ORG_END - (180+9+9)
+PlayerBmp:
+    .byte #%00000000
+    .byte #%00101000
+    .byte #%01110100
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%11111010
+    .byte #%01111100
+    .byte #%00110000
+
+PlayerClr:
+    .byte #$00
+    .byte #$40
+    .byte #$40
+    .byte #$40
+    .byte #$40
+    .byte #$42
+    .byte #$42
+    .byte #$44
+    .byte #$d2
+
     org ORG_END
     .word start     ; Reset vector at $fffc (where the programs start)
     .word start     ; Interrupt vector $fffe (unused in the VCS)
