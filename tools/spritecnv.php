@@ -6,8 +6,9 @@ if($argc == 2) {
     $colors = [];
     if($obj) {
         foreach($obj->sprites as $sidx => $sprite) {
-            printf("\nsprite%dHeight EQU %d\n", $sidx, $obj->height);
-            printf("sprite%d:\n", $sidx);
+            printf("\nSprite%dHeight EQU %d\n", $sidx, $obj->height + 1);
+            printf("Sprite%d:\n", $sidx);
+            printf("\t.byte #%%00000000\n");
             foreach($sprite->pixels as $psidx => $pixels) {
                 printf("\t.byte #%%");
                 $z = array_values(array_filter($pixels));
@@ -19,9 +20,10 @@ if($argc == 2) {
                 }
                 printf("\n");
             }
-            printf("colors%d:\n", $sidx);
+            printf("Sprite%dColors:\n", $sidx);
+            printf("\t.byte #$00\n");
             foreach($colors as $color) {
-                printf("\t.byte #$%s\n", $color);
+                printf("\t.byte %s\n", $color);
             }
             printf("\n");
         }

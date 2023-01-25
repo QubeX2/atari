@@ -10,8 +10,6 @@
 ; Variables
 ;====================================================================
 ORG_END     EQU $fffc
-P0Height    EQU 9
-
     seg.u vars
     org $80
 
@@ -42,9 +40,9 @@ start:
     ldx #50
     stx Player0YPos    
 
-    lda #<PlayerBmp
+    lda #<Sprite0
     sta PlayerBmpPtr
-    lda #>PlayerBmp
+    lda #>Sprite0
     sta PlayerBmpPtr+1
 
 ;====================================================================
@@ -66,9 +64,8 @@ frame:
     ; VBLANK 37 scanlines 
     ; xpos
     lda Player0XPos
-    sta HMCLR
-
     ldy #0
+    sta HMCLR
     jsr SetObjXPos
     sta WSYNC
     sta HMOVE
@@ -87,21 +84,19 @@ frame:
 scanl:
     txa
     sec
-    sbc Player0YPos ; 192 - 185 = 7
-    cmp #P0Height   ; 7 < 9
+    sbc Player0YPos
+    cmp #Sprite0Height
     bcc ldbmp        ; yes branch (only works on unsigned)
     lda #0
 
 ldbmp:
-    tay             ; 7 to a
+    tay
     lda (PlayerBmpPtr),y
     sta GRP0
 
-    lda PlayerClr,y
+    lda Sprite0Colors,y
     sta COLUP0
-
     sta WSYNC
-
     dex
     bne scanl
 
@@ -120,7 +115,7 @@ ldbmp:
     ; move apple   
     lda Player0XPos
     clc
-    adc #2
+    adc #1
     and #$7f
     sta Player0XPos
     jmp frame        ; repeat frame
@@ -149,28 +144,44 @@ SetObjXPos:
 ;====================================================================
 ; Fill the ROM size to exactly 4kb
 ;====================================================================
-    org ORG_END - (180+9+9)
-PlayerBmp:
-    .byte #%00000000
-    .byte #%00101000
-    .byte #%01110100
-    .byte #%11111010
-    .byte #%11111010
-    .byte #%11111010
-    .byte #%11111010
-    .byte #%01111100
-    .byte #%00110000
-
-PlayerClr:
-    .byte #$00
-    .byte #$40
-    .byte #$40
-    .byte #$40
-    .byte #$40
-    .byte #$42
-    .byte #$42
-    .byte #$44
-    .byte #$d2
+    org ORG_END - (34)
+Sprite0Height EQU 17
+Sprite0:
+	.byte #%00000000
+	.byte #%00100100
+	.byte #%00100100
+	.byte #%00100100
+	.byte #%00100100
+	.byte #%00100100
+	.byte #%00111100
+	.byte #%10111101
+	.byte #%10111101
+	.byte #%10111101
+	.byte #%10111101
+	.byte #%10111101
+	.byte #%10111101
+	.byte #%01111110
+	.byte #%00011000
+	.byte #%00011000
+	.byte #%00011000
+Sprite0Colors:
+	.byte #$00
+	.byte #$05
+	.byte #$05
+	.byte #$85
+	.byte #$85
+	.byte #$85
+	.byte #$85
+	.byte #$4f
+	.byte #$45
+	.byte #$45
+	.byte #$45
+	.byte #$45
+	.byte #$45
+	.byte #$45
+	.byte #$4f
+	.byte #$4f
+	.byte #$05
 
     org ORG_END
     .word start     ; Reset vector at $fffc (where the programs start)
